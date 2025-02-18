@@ -1,28 +1,57 @@
+#include <cstdlib>
+#include <stdlib.h>
+
 #include "raylib.h"
 
-#define SCREEN_WIDTH (800)
-#define SCREEN_HEIGHT (450)
+#define SCREEN_WIDTH (750)
+#define SCREEN_HEIGHT (750)
+
+Color green {173,204,96,255};
+Color darkGreen{43,51,24,255};
+
+int cellSize = 30;
+int cellCount = 25;
+
+class Food {
+public:
+    Vector2 position ;
+    Texture2D texture;
+    Food() {
+        Image image= LoadImage(ASSETS_PATH"food.png");
+        texture =  LoadTextureFromImage(image);
+        UnloadImage(image);
+        position = GenerateRandomPos();
+    }
+
+    ~Food() {
+        UnloadTexture(texture);
+    }
+
+ void Draw() {
+        DrawTexture(texture, position.x * cellSize ,position.y * cellSize,WHITE);
+    }
+
+    Vector2 GenerateRandomPos() {
+        float x = GetRandomValue(0, cellCount -1);
+        float y = GetRandomValue(0, cellCount -1);
+
+        return Vector2 {x,y};
+    }
+};
+
 
 int main(void)
 {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Window title");
+    InitWindow(cellSize*cellCount, cellCount*cellSize, "Window title");
     SetTargetFPS(60);
+    Food food =Food();
 
-    Texture2D texture = LoadTexture(ASSETS_PATH"test.png");
 
     while (!WindowShouldClose())
     {
         BeginDrawing();
-
-        ClearBackground(RAYWHITE);
-
-        const int texture_x = SCREEN_WIDTH / 2 - texture.width / 2;
-        const int texture_y = SCREEN_HEIGHT / 2 - texture.height / 2;
-        DrawTexture(texture, texture_x, texture_y, WHITE);
-
-        const char* text = "OMG! IT WORKS!";
-        const Vector2 text_size = MeasureTextEx(GetFontDefault(), text, 20, 1);
-        DrawText(text, SCREEN_WIDTH / 2 - text_size.x / 2, texture_y + texture.height + text_size.y + 10, 20, BLACK);
+        food.Draw();
+        ClearBackground(green);
 
         EndDrawing();
     }
